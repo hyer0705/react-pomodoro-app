@@ -114,7 +114,7 @@ function Pomodoro() {
       }, 1000);
     }
 
-    return () => clearTimeout(timerId);
+    return () => clearInterval(timerId);
   }, [isActive]);
 
   useEffect(() => {
