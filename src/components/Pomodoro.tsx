@@ -1,5 +1,13 @@
 import styled from "styled-components";
 import { PlayIcon, PauseIcon } from "@heroicons/react/24/solid";
+import { useRecoilState } from "recoil";
+import {
+  ITimerState,
+  goalState,
+  roundState,
+  timerState,
+} from "../recoil/timerAtom";
+import { useEffect, useState } from "react";
 
 const Container = styled.div`
   max-width: 480px;
@@ -43,6 +51,7 @@ const ControlItem = styled.div`
   padding: 20px;
   border-radius: 50%;
   background-color: ${(props) => props.theme.buttonWrapColor};
+  cursor: pointer;
 `;
 
 const InfoWrapper = styled.section`
@@ -70,6 +79,65 @@ const InfoItem = styled.div`
 `;
 
 function Pomodoro() {
+  const [timer, setTimer] = useRecoilState(timerState);
+  const [round, setRound] = useRecoilState(roundState);
+  const [goal, setGoal] = useRecoilState(goalState);
+  const [isActive, setIsActive] = useState(false);
+
+  useEffect(() => {
+    let timerId: number;
+
+    if (isActive) {
+      timerId = setInterval(() => {
+        setTimer((prev: ITimerState) => {
+          const { minutes, seconds } = prev;
+
+          if (minutes === 0) {
+            if (seconds - 1 === 0) {
+              return {
+                minutes: 25,
+                seconds: 0,
+              };
+            }
+          }
+          if (seconds === 0) {
+            return {
+              minutes: minutes - 1,
+              seconds: 59,
+            };
+          }
+          return {
+            minutes,
+            seconds: seconds - 1,
+          };
+        });
+      }, 1000);
+    }
+
+    return () => clearInterval(timerId);
+  }, [isActive]);
+
+  useEffect(() => {
+    if (isActive && timer.minutes % 25 === 0 && timer.seconds === 0) {
+      setRound((prevRound) => prevRound + 1);
+      return;
+    }
+  }, [timer]);
+
+  useEffect(() => {
+    if (round === 4) {
+      setRound(0);
+      setGoal((prevGoal) => prevGoal + 1);
+    }
+  }, [round]);
+
+  useEffect(() => {
+    if (goal === 12) {
+      setGoal(0);
+      setIsActive(false);
+    }
+  }, [goal]);
+
   return (
     <Container>
       <Header>
@@ -77,27 +145,34 @@ function Pomodoro() {
       </Header>
       <TimerWrapper>
         <TimerItem>
-          <Time>25</Time>
+          <Time>{timer.minutes.toString().padStart(2, "0")}</Time>
         </TimerItem>
         <TimerItem>
           <Time>:</Time>
         </TimerItem>
         <TimerItem>
-          <Time>00</Time>
+          <Time>{timer.seconds.toString().padStart(2, "0")}</Time>
         </TimerItem>
       </TimerWrapper>
       <TimerWrapper>
-        <ControlItem>
-          <PlayIcon className="h-6 w-6 text-gray-500" />
-        </ControlItem>
+        {isActive ? (
+          <ControlItem onClick={() => setIsActive(false)}>
+            <PauseIcon className="h-6 w-6 text-gray-500" />
+          </ControlItem>
+        ) : null}
+        {!isActive ? (
+          <ControlItem onClick={() => setIsActive(true)}>
+            <PlayIcon className="h-6 w-6 text-gray-500" />
+          </ControlItem>
+        ) : null}
       </TimerWrapper>
       <InfoWrapper>
         <InfoItem>
-          <span>0/4</span>
+          <span>{`${round}/4`}</span>
           <span>ROUND</span>
         </InfoItem>
         <InfoItem>
-          <span>0/12</span>
+          <span>{`${goal}/12`}</span>
           <span>GOAL</span>
         </InfoItem>
       </InfoWrapper>
