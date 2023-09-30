@@ -8,6 +8,7 @@ import {
   timerState,
 } from "../recoil/timerAtom";
 import { useEffect, useState } from "react";
+import { motion } from "framer-motion";
 
 const Container = styled.div`
   max-width: 480px;
@@ -45,7 +46,7 @@ const Time = styled.span`
   font-size: 90px;
 `;
 
-const ControlItem = styled.div`
+const ControlItem = styled(motion.div)`
   width: 75px;
   height: 75px;
   padding: 20px;
@@ -77,6 +78,10 @@ const InfoItem = styled.div`
     color: ${(props) => props.theme.textColor};
   }
 `;
+
+const controlVariants = {
+  hover: { scale: 1.3, transition: { duration: 0.1 } },
+};
 
 function Pomodoro() {
   const [timer, setTimer] = useRecoilState(timerState);
@@ -156,12 +161,20 @@ function Pomodoro() {
       </TimerWrapper>
       <TimerWrapper>
         {isActive ? (
-          <ControlItem onClick={() => setIsActive(false)}>
+          <ControlItem
+            variants={controlVariants}
+            whileHover="hover"
+            onClick={() => setIsActive(false)}
+          >
             <PauseIcon className="h-6 w-6 text-gray-500" />
           </ControlItem>
         ) : null}
         {!isActive ? (
-          <ControlItem onClick={() => setIsActive(true)}>
+          <ControlItem
+            variants={controlVariants}
+            whileHover="hover"
+            onClick={() => setIsActive(true)}
+          >
             <PlayIcon className="h-6 w-6 text-gray-500" />
           </ControlItem>
         ) : null}
