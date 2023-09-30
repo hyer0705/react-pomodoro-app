@@ -30,7 +30,7 @@ const TimerWrapper = styled.section`
   justify-content: center;
   margin-bottom: 80px;
 `;
-const TimerItem = styled.div`
+const TimerItem = styled(motion.div)`
   padding: 100px 50px;
   background-color: ${(props) => props.theme.timeCardColor};
   color: ${(props) => props.theme.bgColor};
@@ -82,6 +82,20 @@ const InfoItem = styled.div`
 const controlVariants = {
   hover: { scale: 1.3, transition: { duration: 0.1 } },
   click: { scale: 1, transition: { duration: 0.1 } },
+};
+
+const timerVariants = {
+  init: {
+    scale: 0.5,
+  },
+  changed: {
+    scale: 1,
+    transition: {
+      type: "spring",
+      duration: 0.7,
+      bounce: 0.5,
+    },
+  },
 };
 
 function Pomodoro() {
@@ -150,13 +164,23 @@ function Pomodoro() {
         <Title>Pomodoro</Title>
       </Header>
       <TimerWrapper>
-        <TimerItem>
+        <TimerItem
+          key={timer.minutes}
+          variants={timerVariants}
+          initial="init"
+          animate="changed"
+        >
           <Time>{timer.minutes.toString().padStart(2, "0")}</Time>
         </TimerItem>
         <TimerItem>
           <Time>:</Time>
         </TimerItem>
-        <TimerItem>
+        <TimerItem
+          key={timer.seconds}
+          variants={timerVariants}
+          initial="init"
+          animate="changed"
+        >
           <Time>{timer.seconds.toString().padStart(2, "0")}</Time>
         </TimerItem>
       </TimerWrapper>
