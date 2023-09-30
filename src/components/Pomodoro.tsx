@@ -8,6 +8,7 @@ import {
   timerState,
 } from "../recoil/timerAtom";
 import { useEffect, useState } from "react";
+import { motion } from "framer-motion";
 
 const Container = styled.div`
   max-width: 480px;
@@ -29,7 +30,7 @@ const TimerWrapper = styled.section`
   justify-content: center;
   margin-bottom: 80px;
 `;
-const TimerItem = styled.div`
+const TimerItem = styled(motion.div)`
   padding: 100px 50px;
   background-color: ${(props) => props.theme.timeCardColor};
   color: ${(props) => props.theme.bgColor};
@@ -45,7 +46,7 @@ const Time = styled.span`
   font-size: 90px;
 `;
 
-const ControlItem = styled.div`
+const ControlItem = styled(motion.div)`
   width: 75px;
   height: 75px;
   padding: 20px;
@@ -77,6 +78,25 @@ const InfoItem = styled.div`
     color: ${(props) => props.theme.textColor};
   }
 `;
+
+const controlVariants = {
+  hover: { scale: 1.3, transition: { duration: 0.1 } },
+  click: { scale: 1, transition: { duration: 0.1 } },
+};
+
+const timerVariants = {
+  init: {
+    scale: 0.5,
+  },
+  changed: {
+    scale: 1,
+    transition: {
+      type: "spring",
+      duration: 0.7,
+      bounce: 0.5,
+    },
+  },
+};
 
 function Pomodoro() {
   const [timer, setTimer] = useRecoilState(timerState);
@@ -144,24 +164,44 @@ function Pomodoro() {
         <Title>Pomodoro</Title>
       </Header>
       <TimerWrapper>
-        <TimerItem>
+        <TimerItem
+          key={timer.minutes}
+          variants={timerVariants}
+          initial="init"
+          animate="changed"
+        >
           <Time>{timer.minutes.toString().padStart(2, "0")}</Time>
         </TimerItem>
         <TimerItem>
           <Time>:</Time>
         </TimerItem>
-        <TimerItem>
+        <TimerItem
+          key={timer.seconds}
+          variants={timerVariants}
+          initial="init"
+          animate="changed"
+        >
           <Time>{timer.seconds.toString().padStart(2, "0")}</Time>
         </TimerItem>
       </TimerWrapper>
       <TimerWrapper>
         {isActive ? (
-          <ControlItem onClick={() => setIsActive(false)}>
+          <ControlItem
+            variants={controlVariants}
+            whileHover="hover"
+            whileTap="click"
+            onClick={() => setIsActive(false)}
+          >
             <PauseIcon className="h-6 w-6 text-gray-500" />
           </ControlItem>
         ) : null}
         {!isActive ? (
-          <ControlItem onClick={() => setIsActive(true)}>
+          <ControlItem
+            variants={controlVariants}
+            whileHover="hover"
+            whileTap="click"
+            onClick={() => setIsActive(true)}
+          >
             <PlayIcon className="h-6 w-6 text-gray-500" />
           </ControlItem>
         ) : null}
