@@ -81,6 +81,7 @@ const InfoItem = styled.div`
 
 const controlVariants = {
   hover: { scale: 1.3, transition: { duration: 0.1 } },
+  click: { scale: 1, transition: { duration: 0.1 } },
 };
 
 function Pomodoro() {
@@ -164,6 +165,7 @@ function Pomodoro() {
           <ControlItem
             variants={controlVariants}
             whileHover="hover"
+            whileTap="click"
             onClick={() => setIsActive(false)}
           >
             <PauseIcon className="h-6 w-6 text-gray-500" />
@@ -173,6 +175,7 @@ function Pomodoro() {
           <ControlItem
             variants={controlVariants}
             whileHover="hover"
+            whileTap="click"
             onClick={() => setIsActive(true)}
           >
             <PlayIcon className="h-6 w-6 text-gray-500" />
