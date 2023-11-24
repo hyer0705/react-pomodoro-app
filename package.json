@@ -31,7 +31,8 @@
   "scripts": {
     "start": "vite",
     "build": "tsc && vite build",
-    "serve": "vite preview"
+    "serve": "vite preview",
+    "preview": "vite preview"
   },
   "browserslist": [
     ">0.2%",
